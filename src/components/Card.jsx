@@ -1,6 +1,14 @@
-import React from 'react'
+import React, { useState } from 'react'
 
-const Card = ({title, price, imageUrl}) => {
+const Card = ({title, price, imageUrl, addToCart}) => {
+    
+    const [isAdded, setIsAdded] = useState(false);
+
+    const onClickPlus = () => {
+        addToCart({title, price, imageUrl, addToCart})
+        setIsAdded(!isAdded)
+    }
+
   return (
     <div className="card mb-20">
         <div className="favorite">
@@ -13,9 +21,7 @@ const Card = ({title, price, imageUrl}) => {
                 <span>Цена</span>
                 <b>{price} руб.</b>
             </div>
-        <button className="button">
-            <img src="/img/plus.svg" alt="plus" />
-        </button>
+            <img onClick={onClickPlus} className='toAdd' src={isAdded ? '/img/btn-checked.svg' :  '/img/btn-plus.svg'} alt="plus" />
         </div>
     </div>
   )
