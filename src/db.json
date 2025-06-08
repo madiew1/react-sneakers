@@ -1,0 +1,64 @@
+{
+  "sneakers": [
+    {
+      "id": 1,
+      "title": "Мужские Кроссовки Nike Blazer Mid Suede",
+      "price": 12999,
+      "imageUrl": "public/img/sneakers/1.jpg"
+    },
+    {
+      "id": 2,
+      "title": "Мужские Кроссовки Nike Air Max 270",
+      "price": 15600,
+      "imageUrl": "public/img/sneakers/2.jpg"
+    },
+    {
+      "id": 3,
+      "title": "Мужские Кроссовки Nike Blazer Mid Suede",
+      "price": 8499,
+      "imageUrl": "public/img/sneakers/3.jpg"
+    },
+    {
+      "id": 4,
+      "title": "Кроссовки Puma X Aka Boku Future Rider",
+      "price": 7800,
+      "imageUrl": "public/img/sneakers/4.jpg"
+    },
+    {
+      "id": 5,
+      "title": "Кроссовки Future Rider",
+      "price": 9550,
+      "imageUrl": "public/img/sneakers/5.jpg"
+    },
+    {
+      "id": 6,
+      "title": "Кроссовки Black Edition",
+      "price": 16999,
+      "imageUrl": "public/img/sneakers/6.jpg"
+    },
+    {
+      "id": 7,
+      "title": "Кроссовки Orange Boomb Edition",
+      "price": 7499,
+      "imageUrl": "public/img/sneakers/7.jpg"
+    },
+    {
+      "id": 8,
+      "title": "Кроссовки Nike Air Max 270",
+      "price": 15600,
+      "imageUrl": "public/img/sneakers/8.jpg"
+    },
+    {
+      "id": 9,
+      "title": "Кроссовки Nike Air Force 1",
+      "price": 5900,
+      "imageUrl": "public/img/sneakers/9.jpg"
+    },
+    {
+      "id": 10,
+      "title": "Кроссовки Adidas Ultraboost",
+      "price": 11500,
+      "imageUrl": "public/img/sneakers/10.jpg"
+    }
+  ]
+}
