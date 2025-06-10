@@ -1,7 +1,10 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import Card from "../Card";
+import { AppContext } from '../../App';
 
-const Favorites = ({favorites, onAddToCart, onAddToFavorite}) => {
+const Favorites = ({onAddToCart}) => {
+  const {favoriteSneakers, onAddToFavorite} = useContext(AppContext);
+
   console.log("rerender");
   return (
     <>
@@ -12,7 +15,7 @@ const Favorites = ({favorites, onAddToCart, onAddToFavorite}) => {
             <div className="d-flex flex-wrap">
 
               {
-                favorites.map((favorite, index) => <Card addToFavorite={onAddToFavorite} isFavorited={true} addToCart={onAddToCart} key={index} {...favorite}/>)
+                favoriteSneakers.map((favorite, index) => <Card addToFavorite={onAddToFavorite} isFavorited={favoriteSneakers.some(item => Number(item.id) == Number(favorite.id))} addToCart={onAddToCart} key={index} {...favorite}/>)
               }
               
             </div>
