@@ -15,7 +15,7 @@ const Favorites = ({onAddToCart}) => {
             <div className="d-flex flex-wrap">
 
               {
-                favoriteSneakers.map((favorite, index) => <Card addToFavorite={onAddToFavorite} isFavorited={favoriteSneakers.some(item => Number(item.id) == Number(favorite.id))} addToCart={onAddToCart} key={index} {...favorite}/>)
+                favoriteSneakers.map((favorite, index) => <Card isFavorited={true} addToFavorite={onAddToFavorite} addToCart={onAddToCart} key={index} {...favorite}/>)
               }
               
             </div>

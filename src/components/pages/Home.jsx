@@ -1,18 +1,17 @@
 import React from 'react'
 import Card from "../Card";
 
-const Home =  ({sneakers, searchValue, setSearchValue, onChangeSearchInput, onAddToCart, onAddToFavorite,  favoriteSneakers, isLoading}) => {
+const Home =  ({sneakers, searchValue, setSearchValue, onChangeSearchInput, onAddToCart, onAddToFavorite, isLoading}) => {
 
   const renderItems = () => {
     const filteredSneakers = sneakers.filter(obj => obj.title.toLowerCase().includes(searchValue.toLowerCase())
     );
     return (isLoading ? [...Array(8)] : filteredSneakers).map((sneaker, index) => 
       <Card 
-      isFavorited={favoriteSneakers.some(favoriteSneaker => Number(favoriteSneaker.id) == Number(sneaker.id))} 
       key={index}
       loading={isLoading} 
-      addToFavorite={onAddToFavorite} 
-      addToCart={onAddToCart} 
+      addToFavorite={(obj) => onAddToFavorite(obj)} 
+      addToCart={(obj) => onAddToCart(obj)} 
       {...sneaker}/>)
   }
 

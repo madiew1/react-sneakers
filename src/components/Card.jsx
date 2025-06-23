@@ -2,16 +2,16 @@ import React, { useState, useContext } from 'react'
 import { AppContext } from '../App';
 import ContentLoader from 'react-content-loader';
 
-const Card = ({id, title, price, imageUrl, addToCart, addToFavorite, isFavorited = false, loading}) => {
-
-    const {itemHasAdded} = useContext(AppContext);
+const Card = ({id, title, price, imageUrl, addToCart, addToFavorite, loading = false, isFavorited = false}) => {
+    const {itemHasAdded , itemHasFavorited} = useContext(AppContext);
     const [isFavorite, setFavoriteSneakers] = useState(isFavorited);
 
     const onClickPlus = () => {
-        addToCart({id, title, price, imageUrl});
+        addToCart({id, parentId: id, title, price, imageUrl});
     }
     const onClickFavorite = () => {
         addToFavorite({id, title, price, imageUrl})
+        itemHasFavorited(id);
         setFavoriteSneakers(!isFavorite)
     }
 
@@ -35,7 +35,9 @@ const Card = ({id, title, price, imageUrl, addToCart, addToFavorite, isFavorited
         ) : (
             <>
             <div className="favorite">
-                <img onClick={onClickFavorite} src={isFavorite ? '/img/liked.svg' :  '/img/unliked.svg'} alt="heart" />
+                {
+                    addToFavorite && <img onClick={onClickFavorite} src={isFavorite ? '/img/liked.svg' : '/img/unliked.svg'} alt="heart" />
+                }
             </div>
                 <img width="100%" height={135} src={imageUrl} alt="sneakers" />
                 <h5>{title}</h5>
@@ -44,7 +46,9 @@ const Card = ({id, title, price, imageUrl, addToCart, addToFavorite, isFavorited
                         <span>Цена</span>
                         <b>{price} руб.</b>
                     </div>
-                    <img onClick={onClickPlus} className='toAdd' src={itemHasAdded(id) ? '/img/btn-checked.svg' :  '/img/btn-plus.svg'} alt="plus" />
+                    {
+                        addToCart && <img onClick={onClickPlus} className='toAdd' src={itemHasAdded(id) ? '/img/btn-checked.svg' :  '/img/btn-plus.svg'} alt="plus" />
+                    }
                 </div>
             </>
         )}

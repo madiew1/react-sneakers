@@ -1,10 +1,11 @@
 import React, { createContext, useEffect } from "react";
 import { Route, Routes } from "react-router-dom";
 import { useState } from "react";
-import Overlay from "./components/Overlay";
+import Overlay from "./components/Overlay";   
 import Header from "./components/Header";
 import Home from "./components/pages/Home";
 import Favorites from "./components/pages/Favorites";
+import Orders from "./components/pages/Orders";
 import axios from "axios";
 
 export const AppContext = createContext({});
@@ -19,18 +20,27 @@ const App = () => {
 
   useEffect(() => {
       async function fetchData() {
-        const cartResponse = await axios.get('https://68053c6fca467c15be68a31a.mockapi.io/cartSneakers');
-        const favoriteResponse = await axios.get('https://68053c6fca467c15be68a31a.mockapi.io/favoriteSneakers');
-        const sneakersResponse = await fetch(`http://localhost:3000/sneakers`, {
-          method: "GET"
-        })
-        .then((res) => res.json());
+       try {
 
+        const [cartResponse, favoriteResponse, sneakersResponse] = await Promise.all([
+          axios.get('https://68053c6fca467c15be68a31a.mockapi.io/cartSneakers'),
+          axios.get('https://68053c6fca467c15be68a31a.mockapi.io/favoriteSneakers'),
+          fetch(`http://localhost:3000/sneakers`, {
+            method: "GET"
+          })
+          .then((res) => res.json())
+        ]);
+         
         setIsLoading(false)
 
         setCartSneakers(cartResponse.data);
-        setToFavoriteSneakers(favoriteResponse.data);
+        setToFavoriteSneakers(favoriteResponse.data); 
         setSneakers(sneakersResponse);
+        
+       } catch (error) {
+        console.error(error)
+        alert('При получении данных возникла ошибка')
+       }
       }
       fetchData();
   },[])
@@ -38,12 +48,22 @@ const App = () => {
   const onAddToCart = async (obj) => {
     console.log(obj)
     try {
-      if (cartSneakers.find((cartObj) => Number(cartObj.id) === Number(obj.id))) {
-        await axios.delete(`https://68053c6fca467c15be68a31a.mockapi.io/cartSneakers/${obj.id}`)
-        setCartSneakers((prev) => prev.filter((item) => Number(item.id) !== Number(obj.id)))
+      const findSneaker = cartSneakers.find((cartObj) => Number(cartObj.parentId) === Number(obj.id));
+      if (findSneaker) {
+        setCartSneakers((prev) => prev.filter((item) => Number(item.parentId) !== Number(obj.id)))
+        await axios.delete(`https://68053c6fca467c15be68a31a.mockapi.io/cartSneakers/${findSneaker.id}`)
       } else {
-       const {data} = await axios.post('https://68053c6fca467c15be68a31a.mockapi.io/cartSneakers', obj);
-        setCartSneakers((prev) => [...prev, data]);
+        setCartSneakers((prev) => [...prev, obj]);
+        const {data} = await axios.post('https://68053c6fca467c15be68a31a.mockapi.io/cartSneakers', obj);
+        setCartSneakers((prev) => prev.map(item => {
+          if (item.parentId === data.parentId) {
+            return {
+              ...item,
+              id: data.id
+            };
+          }
+          return item;
+        }))
       }
     } catch (error) {
       console.warn(error);
@@ -54,9 +74,9 @@ const App = () => {
   const onAddToFavorite = async (obj) => {
     console.log(obj.id)
     try {
-      if (favoriteSneakers.find((favObj) => favObj.id === obj.id)) {
+      if (favoriteSneakers.find((favObj) => Number(favObj.pa) === Number(obj.id))) {
         axios.delete(`https://68053c6fca467c15be68a31a.mockapi.io/favoriteSneakers/${obj.id}`);
-        setToFavoriteSneakers((prev) => prev.filter((item) => item.id !== obj.id));
+        setToFavoriteSneakers((prev) => prev.filter((item) => Number(item.id) !== Number(obj.id)));
       } else {
         const {data} = await axios.post('https://68053c6fca467c15be68a31a.mockapi.io/favoriteSneakers', obj);
         setToFavoriteSneakers((prev) => [...prev, data])
@@ -68,25 +88,36 @@ const App = () => {
   }
 
   const itemHasAdded = (id) => {
-    return cartSneakers.some((cartSneaker) => Number(cartSneaker.id) == Number(id));
+    return cartSneakers.some((cartSneaker) => Number(cartSneaker.parentId) == Number(id));
   }
 
+  const itemHasFavorited = (id) => {
+    return favoriteSneakers.some((favoriteSneaker) => Number(favoriteSneaker.id) == Number(id));
+  }
+
+  console.log(cartSneakers);
+
   const onRemoveFromCart = (id) => {
-    setCartSneakers((prev) => prev.filter(item => item.id !== id))
-    axios.delete(`https://68053c6fca467c15be68a31a.mockapi.io/cartSneakers/${id}`)
+    try {
+      setCartSneakers((prev) => prev.filter(item => item.id !== id))
+      axios.delete(`https://68053c6fca467c15be68a31a.mockapi.io/cartSneakers/${id}`)
+    } catch (error) {
+      console.error(error)
+      alert('При удалении товара произошла ошибка')
+    }
   }
 
   const onChangeSearchInput = (event) => {
     setSearchValue(event.target.value)
   }
 
+  const totalPrice = cartSneakers.reduce((sum, obj) => obj.price + sum, 0)
+
   return (
     <>
-      <AppContext.Provider value={{sneakers, cartSneakers, favoriteSneakers, itemHasAdded, onAddToFavorite, setCartState, setCartSneakers}}>
+      <AppContext.Provider value={{sneakers, cartSneakers, favoriteSneakers, itemHasAdded, onAddToFavorite, setCartState, setCartSneakers, itemHasFavorited, totalPrice, onAddToCart}}>
         <div className="wrapper clear">
-          {
-            cartState && <Overlay onRemove={onRemoveFromCart} cartSneakers={cartSneakers} onClose={() => setCartState(false)}/>
-          }
+        <Overlay onRemove={onRemoveFromCart} cartSneakers={cartSneakers} onClose={() => setCartState(false)} opened={cartState}/>
           <Header onOpen={() => setCartState(true)} favoriteOne={favoriteSneakers}/>
           <Routes>
             <Route path="/" exact 
@@ -101,6 +132,7 @@ const App = () => {
                           onAddToFavorite={onAddToFavorite} 
                           onAddToCart={onAddToCart}/>}/>
             <Route path="/favorites" exact element={<Favorites onAddToCart={onAddToCart}/>}/>
+            <Route path="/orders" exact element={<Orders />}/>
           </Routes>
         </div>
       </AppContext.Provider>

@@ -1,12 +1,15 @@
 import React, { useContext, useState } from 'react'
-import Info from './Info'
-import { AppContext } from '../App';
+import Info from '../Info'
+import { AppContext } from '../../App';
 import axios from 'axios';
+
+import styles from "../Overlay/Overlay.module.scss"; // ✅ правильно
+
 
 const deley = (ms) => new Promise((resolve) =>  setTimeout(resolve, ms))
 
-const Overlay = ({onClose, cartSneakers, onRemove}) => {
-  const {setCartSneakers} = useContext(AppContext);
+const Overlay = ({onClose, cartSneakers, onRemove, opened}) => {
+  const {setCartSneakers, totalPrice} = useContext(AppContext);
   const [orderId, setOrderId] = useState(null);
   const [completeOrder, setCompleteOrder] = useState(false);
 
@@ -34,9 +37,11 @@ const Overlay = ({onClose, cartSneakers, onRemove}) => {
     }
   };
 
+  const totalTax = Math.round((totalPrice / 100) * 5);
+
   return (
-    <div className="overlay">
-          <div className="drawer">
+    <div className={`${styles.overlay} ${opened ? styles.overlayVisible : ''}`}>
+          <div className={`${styles.drawer}`}>
             <h2 className="d-flex justify-between mb-30">Корзина <img className="removeBtn cu-p" onClick={onClose} src="/img/btn-remove.svg" alt="remove" /></h2>
 
               {
@@ -58,12 +63,12 @@ const Overlay = ({onClose, cartSneakers, onRemove}) => {
                         <li className="d-flex">
                           <span>Итого:</span>
                           <div></div>
-                          <b>26 000 руб.</b>
+                          <b>{totalPrice} руб.</b>
                         </li>
                         <li className="d-flex">
                           <span>Налог 5%:</span>
                           <div></div>
-                          <b> 1300р</b>
+                          <b>{totalTax} руб.</b>
                         </li>
                       </ul>
                       <button disabled={completeOrder} onClick={onOrderComplete} className="greenButton">Оформить заказ <img src="/img/arrow.svg" alt="arrow" /></button>
