@@ -3,10 +3,15 @@ import { createRoot } from 'react-dom/client'
 import { BrowserRouter as Router } from 'react-router-dom'
 import './index.scss'
 import 'macro-css'
-import App from './App.jsx'
+import App from './App'
 
-createRoot(document.getElementById('root')).render(
+const rootElem = document.getElementById('root')
+
+if (rootElem) {
+  createRoot(rootElem).render(
     <Router>
       <App/>
     </Router>
-)
+  )
+}
+ 
